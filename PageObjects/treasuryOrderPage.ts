@@ -30,6 +30,10 @@ export class treasuryOrderPage {
     readonly quantity: Locator;
     readonly price: Locator;
     readonly submit_order: Locator;
+<<<<<<< HEAD
+=======
+    readonly alert: Locator;
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
     readonly release_date_error: Locator;
     readonly to_status_header: Locator;
     readonly to_pending_release_pending: Locator;
@@ -39,10 +43,13 @@ export class treasuryOrderPage {
     readonly details_tab: Locator;
     readonly presigned_document: Locator;
     readonly document_uploaded_icon: Locator;
+<<<<<<< HEAD
     readonly submission_done: Locator;
     readonly signature_done: Locator;
     readonly pending_release_done: Locator;
     readonly completed_done: Locator;
+=======
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
 
     constructor(page: Page){
         this.page = page;
@@ -69,6 +76,10 @@ export class treasuryOrderPage {
         this.quantity = page.getByRole('cell', { name: '0', exact: true }).getByRole('textbox');
         this.price = page.getByRole('row', { name: 'Collapse Toggle select row' }).getByRole('textbox').first();
         this.submit_order = page.getByRole('button', { name: 'Submit Order' });
+<<<<<<< HEAD
+=======
+        this.alert = page.locator('[id="__next"]').getByRole('alert');
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
         this.release_date_error =  page.getByText('Date/Time must be in the future', { exact: true });
         this.to_status_header = page.getByText('Treasury Order Status', { exact: true });
         this.to_pending_release_pending = page.locator('svg').filter({ hasText: '3' }).locator('circle');
@@ -78,11 +89,14 @@ export class treasuryOrderPage {
         this.details_tab = page.getByText('Details', { exact: true });
         this.presigned_document = page.getByRole('button', { name: 'Treasury Order - Test 465 -' });
         this.document_uploaded_icon = page.getByLabel('Uploaded');
+<<<<<<< HEAD
         this.submission_done = page.locator('div').filter({ hasText: /^Submitted$/ }).locator('path');
         this.signature_done = page.locator('div').filter({ hasText: /^Awaiting Signatures$/ }).locator('path');
         this.pending_release_done = page.locator('div').filter({ hasText: /^Pending Release$/ }).locator('path')
         this.completed_done = page.locator('div').filter({ hasText: /^Completed$/ }).locator('path');
         this.is_current_date_is_effective_date = true;
+=======
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
     }
 
     async select_issuer(issuer){
@@ -108,12 +122,37 @@ export class treasuryOrderPage {
     }
 
     // selects the current date and nearby time as release date and time 
+<<<<<<< HEAD
     async select_release_date_and_time(effective_date: string){
         var date_time = timeHelper.get_automatic_release_date_time();
         await this.release_date.click();
         await this.page.getByRole('gridcell', { name: effective_date }).nth(1).click();
         await this.page.getByLabel(date_time[1] + ' hours', { exact: true }).click();
         await this.page.getByLabel(date_time[2] + ' minutes',  { exact: true }).click();
+=======
+    async select_release_date_and_time(){
+        var date = String(new Date().getDate()).padStart(2, '0');
+        var time = new Date().toLocaleTimeString("en-US", {timeZone: 'America/New_York'}).split(':');
+        var hour = parseInt(time[0]);
+        var min = Math.ceil(parseInt(time[1])/5) * 5;
+        if(parseInt(time[1]) ==  min){
+            min = min + 5;  // if current ET time min and calculated min are same it will show error so adding 5 more mins 
+        } 
+        if(min == 60){
+            // if the calculated min is 60 then add 1 to hour and make min to zero
+            if(hour == 12){
+                hour = 1;
+            }
+            else{
+                hour = hour + 1; 
+            }
+            min = 0;
+        }
+        await this.release_date.click();
+        await this.page.getByRole('gridcell', { name: date }).nth(1).click();
+        await this.page.getByLabel(hour + ' hours', { exact: true }).click();
+        await this.page.getByLabel(min + ' minutes',  { exact: true }).click();
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
         await this.release_date_time_ok.click();
     }
 
@@ -169,20 +208,33 @@ export class treasuryOrderPage {
     }
 
     async submit_TO(){
+<<<<<<< HEAD
         // reselecting the release date/time again if automatic release time passed
         if(await this.release_date_error.count() != 0){
             this.select_release_date_and_time(this.effective_date_selected); 
+=======
+        if(await this.release_date_error.count() != 0){
+            this.select_release_date_and_time(); // reselecting the release date/time again if automatic release time passed
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
         }
         await expect(this.submit_order).toBeVisible();
         await this.submit_order.click();
     }
 
     async is_TO_submitted(){
+<<<<<<< HEAD
         await expect(this.to_status_header).toContainText('Treasury Order Status');
         await expect(this.submission_done).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.signature_done).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.to_pending_release_pending).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.to_compeleted_pending).toHaveCSS("color", "rgba(0, 0, 0, 0.38)");
+=======
+        await expect(this.alert).toBeVisible();
+        await expect(this.alert).toContainText('Order submitted successfully');
+        await expect(this.to_status_header).toContainText('Treasury Order Status');
+        await expect(this.to_compeleted_pending).toHaveCSS("color", "rgba(0, 0, 0, 0.38)");
+        await expect(this.to_pending_release_pending).toHaveCSS("color", "rgb(33, 150, 243)");
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
     }
 
     async validate_TO_details(name, description, reason, issuer, issue, quantity, delivery_method){
@@ -197,6 +249,7 @@ export class treasuryOrderPage {
     }
 
     async validate_TO_document(name){
+<<<<<<< HEAD
         await this.status_tab.click();
         await expect(this.document_uploaded_icon).toBeVisible();
         await this.document_tab.click();
@@ -217,5 +270,11 @@ export class treasuryOrderPage {
         await expect(this.signature_done).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.pending_release_done).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.completed_done).toHaveCSS("color", "rgb(33, 150, 243)");
+=======
+        await this.document_tab.click();
+        await expect(this.page.getByRole('button', { name: 'Treasury Order - ' + name + ' -' })).toBeVisible();
+        await this.status_tab.click();
+        await expect(this.document_uploaded_icon).toBeVisible();
+>>>>>>> dc9b00b (2628 added validation after creation of TO)
     }
 }
