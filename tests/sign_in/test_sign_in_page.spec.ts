@@ -21,7 +21,7 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   });
   
   test('Get error on sign in with invalid email', async ({ page }) => {
-    await VinylPages.SignInPage.login('invalid@test.com');
+    await VinylPages.SignInPage.sign_in('invalid@test.com');
     await VinylPages.SignInPage.validate_alert('ACCESS DENIED');
   });
   
@@ -32,9 +32,6 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   
   test('Successful Transfer Agent login', async ({page}) =>{
     await VinylPages.SignInPage.login(process.env.TA_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.TA_USER as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number")
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(process.env.HOST as string + "dashboard");
     await VinylPages.DashboardPage.validate_username("Automation QA");
@@ -43,9 +40,6 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   
   test('Successful Issuer Admin login', async ({page}) =>{
     await VinylPages.SignInPage.login(process.env.IA_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.IA_USER as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number");
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(process.env.HOST as string + "dashboard");
     await VinylPages.DashboardPage.validate_username("Automation QA");
@@ -54,9 +48,6 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   
   test('Successful Registered Owner Login', async ({page}) =>{
     await VinylPages.SignInPage.login(process.env.RO_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.RO_user as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number");
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(process.env.HOST as string + "portfolio");
     await VinylPages.PortfolioPage.validate_username("automation");
@@ -65,9 +56,6 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   
   test('Get error on entering invalid OTP', async ({page}) =>{
     await VinylPages.SignInPage.login(process.env.RO_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.RO_user as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number");
     await VinylPages.PhoneVerificationPage.enter_invalid_otp();
     await VinylPages.PhoneVerificationPage.validate_otp_alert('Invalid verification code. Please enter a valid code.');
   });
