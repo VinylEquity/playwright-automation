@@ -112,7 +112,7 @@ export class treasuryOrderPage {
     async upload_presigned_document(){
         await this.upload_document_btn.click();
         await this.upload_doc.setInputFiles('test_data/presigned_document.pdf');
-        await this.page.waitForTimeout(10000);
+        await this.page.waitForTimeout(10000); // waiting time to upload the document
         await expect(this.document_uploaded_msg).toBeVisible();
         await this.close_doc_upload_popup.click();
     }

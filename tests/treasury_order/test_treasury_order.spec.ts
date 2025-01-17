@@ -3,8 +3,6 @@ import { vinylPages } from '../../PageObjects/vinylPages'
 import { randomInt } from 'crypto';
 import { timeHelper } from '../../support/time.helper';
 import { mailerMethods } from '../../support/mailer.methods';
-import { console } from 'inspector';
-
 
 test.describe("Vinyl Treasury Order", {tag: '@dev_sanity'}, async () => {
   let VinylPages: vinylPages;
