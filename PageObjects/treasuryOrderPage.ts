@@ -2,6 +2,8 @@ import { expect, type Locator, type Page } from '@playwright/test';
 import { timeHelper } from '../support/time.helper';
 
 export class treasuryOrderPage {
+    is_current_date_is_effective_date: Boolean;
+    effective_date_selected: string;
     readonly page: Page;
     readonly select_issuer_profile: Locator;
     readonly create_treasury_order: Locator;
@@ -80,6 +82,7 @@ export class treasuryOrderPage {
         this.signature_done = page.locator('div').filter({ hasText: /^Awaiting Signatures$/ }).locator('path');
         this.pending_release_done = page.locator('div').filter({ hasText: /^Pending Release$/ }).locator('path')
         this.completed_done = page.locator('div').filter({ hasText: /^Completed$/ }).locator('path');
+        this.is_current_date_is_effective_date = true;
     }
 
     async select_issuer(issuer){
@@ -87,17 +90,29 @@ export class treasuryOrderPage {
         await this.page.getByRole('heading', { name: issuer, exact: true }).click();
     }
 
-    // selects the current date as effective date
     async select_effective_date(){
         await this.effective_date.click();
-        await this.page.getByRole('gridcell', { name: timeHelper.get_effective_date() }).click();
+        this.effective_date_selected = timeHelper.get_effective_date();
+        // select the very next available date if current day is weekend or holiday
+        while(true){
+            if(await this.page.getByRole('gridcell', { name: this.effective_date_selected }).isDisabled()){
+                this.effective_date_selected = String(parseInt(this.effective_date_selected) + 1).padStart(2, '0');
+                this.is_current_date_is_effective_date = false;
+            }
+            else{
+                break;
+            }
+        }
+        await expect(this.page.getByRole('gridcell', { name: this.effective_date_selected })).toBeEnabled();
+        await this.page.getByRole('gridcell', { name: this.effective_date_selected }).click();
+        return this.effective_date_selected;
     }
 
     // selects the current date and nearby time as release date and time 
-    async select_release_date_and_time(){
+    async select_release_date_and_time(effective_date: string){
         var date_time = timeHelper.get_automatic_release_date_time();
         await this.release_date.click();
-        await this.page.getByRole('gridcell', { name: date_time[0] }).nth(1).click();
+        await this.page.getByRole('gridcell', { name: effective_date }).nth(1).click();
         await this.page.getByLabel(date_time[1] + ' hours', { exact: true }).click();
         await this.page.getByLabel(date_time[2] + ' minutes',  { exact: true }).click();
         await this.release_date_time_ok.click();
@@ -112,7 +127,7 @@ export class treasuryOrderPage {
     async upload_presigned_document(){
         await this.upload_document_btn.click();
         await this.upload_doc.setInputFiles('test_data/presigned_document.pdf');
-        await this.page.waitForTimeout(10000); // waiting time to upload the document
+        await this.page.waitForTimeout(5000); // waiting time to upload the document
         await expect(this.document_uploaded_msg).toBeVisible();
         await this.close_doc_upload_popup.click();
     }
@@ -124,13 +139,14 @@ export class treasuryOrderPage {
         await this.reason.click();
         await this.page.getByRole('option', { name: reason }).click();
         await this.description.fill(description);
-        await this.select_effective_date();
-        await this.select_release_date_and_time();
+        this.effective_date_selected = await this.select_effective_date();
+        await this.select_release_date_and_time(this.effective_date_selected);
         await this.delivery_method.click();
         await this.page.getByRole('option', { name: d_method }).click();
         await this.act_1993.click();
         await this.disable_board_approval();
         await this.upload_presigned_document();
+        return this.is_current_date_is_effective_date;
     } 
 
     async add_existing_automation_ro_recipient(email){
@@ -153,8 +169,9 @@ export class treasuryOrderPage {
     }
 
     async submit_TO(){
+        // reselecting the release date/time again if automatic release time passed
         if(await this.release_date_error.count() != 0){
-            this.select_release_date_and_time(); // reselecting the release date/time again if automatic release time passed
+            this.select_release_date_and_time(this.effective_date_selected); 
         }
         await expect(this.submit_order).toBeVisible();
         await this.submit_order.click();
@@ -180,16 +197,16 @@ export class treasuryOrderPage {
     }
 
     async validate_TO_document(name){
-        await this.document_tab.click();
-        await expect(this.page.getByRole('button', { name: 'Treasury Order - ' + name + ' -' })).toBeVisible();
         await this.status_tab.click();
         await expect(this.document_uploaded_icon).toBeVisible();
+        await this.document_tab.click();
+        await expect(this.page.getByRole('button', { name: `Treasury Order - ${name} -` })).toBeVisible();
     }
 
     async get_release_date_and_time(){
         var date = new Date();
         var release_date = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-        var release_date_time = String(await this.page.getByText('Automatic Release Date/Time :' + release_date).textContent()).replace('Automatic Release Date/Time :','');
+        var release_date_time = String(await this.page.getByText(`Automatic Release Date/Time : ${release_date}`).textContent()).replace('Automatic Release Date/Time :','');
         return release_date_time;
     }
 

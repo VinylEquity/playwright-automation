@@ -39,7 +39,7 @@ export class signInPage {
         this.sign_in(email);
         var message = await this.page.getByText('We have sent an email with').textContent();
         await this.page.goto(await mailerMethods.login_mail(message.substring(40,71), email));
-        await this.page.waitForURL(process.env.HOST as string + "verify/phone-number")
+        await this.page.waitForURL(`${process.env.HOST}verify/phone-number`);
     }
 
     async validate_error(error_msg){

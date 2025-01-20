@@ -27,8 +27,8 @@ export const timeHelper = {
     get_wait_time(auto_release_time: string): number {
         var release_time = auto_release_time.split(" ");
         var current_time = new Date().toLocaleTimeString("en-US", {timeZone: 'America/New_York'}).split(':');
-        var date1 = new Date(release_time[0] + ' ' + release_time[1]+ ':00.0000000');
-        var date2 = new Date(release_time[0] + ' ' + current_time[0] + ':' + current_time[1] + ':00.0000000');
+        var date1 = new Date(`${release_time[0]} ${release_time[1]}:00.0000000`);
+        var date2 = new Date(`${release_time[0]} ${current_time[0]}:${current_time[1]}:00.0000000`);
         let wait_time = date1.getTime() - date2.getTime();
         return wait_time;
     },

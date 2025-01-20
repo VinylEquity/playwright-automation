@@ -24,14 +24,15 @@ export class portfolioPage{
         await this.logout_btn.click();
     }
 
-    async get_issuer_quantity(){
+    async get_issuer_quantity(issue, issuer){
+        await this.holding_table.waitFor();
         await expect(this.holding_table).toBeVisible();
         const row_count = await this.holding_table.locator('tr').count();
-        var issuer, issue: string;
+        var issuer_UI, issue_UI: string;
         for(var row=0; row<row_count; row++){
-            issuer = await this.holding_table.locator('tr').nth(row).locator('td').nth(0).innerText();
-            issue = await this.holding_table.locator('tr').nth(row).locator('td').nth(1).innerText();
-            if(issuer  ==  process.env.ISSUER  && issue ==  process.env.ISSUE){
+            issuer_UI = await this.holding_table.locator('tr').nth(row).locator('td').nth(0).innerText();
+            issue_UI = await this.holding_table.locator('tr').nth(row).locator('td').nth(1).innerText();
+            if(issuer  ==  issuer_UI  && issue ==  issue_UI){
                 return parseInt(await this.holding_table.locator('tr').nth(row).locator('td').nth(2).innerText());
             }
         }
