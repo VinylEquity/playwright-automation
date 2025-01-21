@@ -30,6 +30,6 @@ export const timeHelper = {
         var date1 = new Date(`${release_time[0]} ${release_time[1]}:00.0000000`);
         var date2 = new Date(`${release_time[0]} ${current_time[0]}:${current_time[1]}:00.0000000`);
         let wait_time = date1.getTime() - date2.getTime();
-        return wait_time;
+        return wait_time + 1000;
     },
 }

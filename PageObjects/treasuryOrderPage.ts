@@ -206,7 +206,7 @@ export class treasuryOrderPage {
     async get_release_date_and_time(){
         var date = new Date();
         var release_date = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-        var release_date_time = String(await this.page.getByText(`Automatic Release Date/Time : ${release_date}`).textContent()).replace('Automatic Release Date/Time :','');
+        var release_date_time = String(await this.page.getByText(`Automatic Release Date/Time :${release_date}`).textContent()).replace('Automatic Release Date/Time :','');
         return release_date_time;
     }
 
