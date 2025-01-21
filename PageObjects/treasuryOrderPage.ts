@@ -105,7 +105,6 @@ export class treasuryOrderPage {
         }
         await expect(this.page.getByRole('gridcell', { name: this.effective_date_selected })).toBeEnabled();
         await this.page.getByRole('gridcell', { name: this.effective_date_selected }).click();
-        return this.effective_date_selected;
     }
 
     // selects the current date and nearby time as release date and time 
@@ -139,7 +138,7 @@ export class treasuryOrderPage {
         await this.reason.click();
         await this.page.getByRole('option', { name: reason }).click();
         await this.description.fill(description);
-        this.effective_date_selected = await this.select_effective_date();
+        await this.select_effective_date();
         await this.select_release_date_and_time(this.effective_date_selected);
         await this.delivery_method.click();
         await this.page.getByRole('option', { name: d_method }).click();
