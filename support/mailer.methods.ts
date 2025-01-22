@@ -11,6 +11,5 @@ export const mailerMethods = {
 
     async get_TO_mail(subject: string, toAddress: string){
         const emailHTML = await mailHelper.readEmail(page, process.env.FROM_MAIL, toAddress, subject);
-        console.log(emailHTML);
     }
 };

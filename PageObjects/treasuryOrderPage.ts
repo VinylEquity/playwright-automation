@@ -157,7 +157,8 @@ export class treasuryOrderPage {
 
     async validate_recipent_added(name, email, tin){
         await expect(this.recipient_row1).toBeVisible();
-        await expect(this.page.getByRole('cell', { name: name, exact: true })).toBeVisible();
+        await this.recipient_row1.scrollIntoViewIfNeeded();
+        await expect(this.page.getByRole('cell', { name: name.toUpperCase(), exact: true })).toBeVisible();
         await expect(this.page.getByRole('cell', { name: email, exact: true })).toBeVisible();
         await expect(this.page.getByRole('cell', { name: tin , exact: true })).toBeVisible();
     }
