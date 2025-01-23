@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { vinylPages } from '../../PageObjects/vinylPages'
 
-test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
+test.describe("Vinyl Login Page", {tag: '@dev_sanity'}, async () => {
   let VinylPages: vinylPages;
 
   test.beforeEach(async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
     await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
-    await VinylPages.DashboardPage.validate_username("Automation QA");
+    await VinylPages.DashboardPage.validate_username("AUTOMATION QA");
     await VinylPages.DashboardPage.logout();
   });
   
@@ -41,7 +41,7 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
     await VinylPages.SignInPage.login(`${process.env.IA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
-    await VinylPages.DashboardPage.validate_username("Automation QA");
+    await VinylPages.DashboardPage.validate_username("AUTOMATION QA");
     await VinylPages.DashboardPage.logout();
   });
   
@@ -49,7 +49,7 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
     await VinylPages.SignInPage.login(`${process.env.RO_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}portfolio`);
-    await VinylPages.PortfolioPage.validate_username("automation");
+    await VinylPages.PortfolioPage.validate_username("AUTOMATION");
     await VinylPages.PortfolioPage.logout();
   });
   

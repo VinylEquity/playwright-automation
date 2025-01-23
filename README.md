@@ -18,4 +18,13 @@ npx playwright test
 ```
 7. Once test run is completed it should automatically open the html report in default browser
 
+## Commands to run the tests using tags
+1. To run the dev sanity tests
+```
+npx playwright test --headed --grep @dev_sanity
+```
+2. To run the regression tests
+```
+npx playwright test --headed --grep @regression
+```
 Note: For more information checkout the PlayWright's officical website [https://playwright.dev/docs/getting-started-vscode]
