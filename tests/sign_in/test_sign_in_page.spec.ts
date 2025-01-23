@@ -1,20 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { vinylPages } from '../../PageObjects/vinylPages'
 
-<<<<<<< HEAD
-test.describe("Vinyl Login Page", {tag: '@dev_sanity'}, async () => {
-=======
 test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
->>>>>>> dc9b00b (2628 added validation after creation of TO)
   let VinylPages: vinylPages;
 
   test.beforeEach(async ({ page }) => {
     VinylPages = new vinylPages(page);
-<<<<<<< HEAD
     await page.goto(`${process.env.HOST}`); // open the app
-=======
-    await page.goto(process.env.HOST as string) // open the app
->>>>>>> dc9b00b (2628 added validation after creation of TO)
     await expect(page.getByText('Enter Your Email To Sign In')).toBeVisible() // make sure app is in login page 
   });
   
@@ -28,11 +20,7 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   });
   
   test('Get error on sign in with invalid email', async ({ page }) => {
-<<<<<<< HEAD
     await VinylPages.SignInPage.sign_in('invalid@test.com');
-=======
-    await VinylPages.SignInPage.login('invalid@test.com');
->>>>>>> dc9b00b (2628 added validation after creation of TO)
     await VinylPages.SignInPage.validate_alert('ACCESS DENIED');
   });
   
@@ -42,68 +30,31 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   });
   
   test('Successful Transfer Agent login', async ({page}) =>{
-<<<<<<< HEAD
     await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
     await VinylPages.DashboardPage.validate_username("AUTOMATION QA");
-=======
-    await VinylPages.SignInPage.login(process.env.TA_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.TA_USER as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number")
-    await VinylPages.PhoneVerificationPage.enter_valid_otp();
-    await page.waitForURL(process.env.HOST as string + "dashboard");
-    await VinylPages.DashboardPage.validate_username("Automation QA");
->>>>>>> dc9b00b (2628 added validation after creation of TO)
     await VinylPages.DashboardPage.logout();
   });
   
   test('Successful Issuer Admin login', async ({page}) =>{
-<<<<<<< HEAD
     await VinylPages.SignInPage.login(`${process.env.IA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
     await VinylPages.DashboardPage.validate_username("AUTOMATION QA");
-=======
-    await VinylPages.SignInPage.login(process.env.IA_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.IA_USER as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number");
-    await VinylPages.PhoneVerificationPage.enter_valid_otp();
-    await page.waitForURL(process.env.HOST as string + "dashboard");
-    await VinylPages.DashboardPage.validate_username("Automation QA");
->>>>>>> dc9b00b (2628 added validation after creation of TO)
     await VinylPages.DashboardPage.logout();
   });
   
   test('Successful Registered Owner Login', async ({page}) =>{
-<<<<<<< HEAD
     await VinylPages.SignInPage.login(`${process.env.RO_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}portfolio`);
     await VinylPages.PortfolioPage.validate_username("AUTOMATION");
-=======
-    await VinylPages.SignInPage.login(process.env.RO_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.RO_user as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number");
-    await VinylPages.PhoneVerificationPage.enter_valid_otp();
-    await page.waitForURL(process.env.HOST as string + "portfolio");
-    await VinylPages.PortfolioPage.validate_username("automation");
->>>>>>> dc9b00b (2628 added validation after creation of TO)
     await VinylPages.PortfolioPage.logout();
   });
   
   test('Get error on entering invalid OTP', async ({page}) =>{
-<<<<<<< HEAD
     await VinylPages.SignInPage.login(`${process.env.RO_USER}`);
-=======
-    await VinylPages.SignInPage.login(process.env.RO_USER as string);
-    const message = await page.getByText('We have sent an email with').textContent();
-    await page.goto(await mailerMethods.login_mail(message.substring(40,71), process.env.RO_user as string));
-    await page.waitForURL(process.env.HOST as string + "verify/phone-number");
->>>>>>> dc9b00b (2628 added validation after creation of TO)
     await VinylPages.PhoneVerificationPage.enter_invalid_otp();
     await VinylPages.PhoneVerificationPage.validate_otp_alert('Invalid verification code. Please enter a valid code.');
   });
