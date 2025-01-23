@@ -4,6 +4,7 @@ import { phoneVerificationPage } from './phoneVerificationPage';
 import { dashboardPage } from './dashBoardPage';
 import { treasuryOrderPage } from './treasuryOrderPage';
 import { portfolioPage} from './portfolioPage';
+import { returnToTreasuryPage } from './returnToTreasuryPage';
 
 export class vinylPages{
     readonly page: Page;
@@ -12,6 +13,7 @@ export class vinylPages{
     readonly TreasuryOrderPage;
     readonly PhoneVerificationPage;
     readonly PortfolioPage;
+    readonly ReturnToTreasuryPage;
 
     constructor(page: Page){
         this.SignInPage = new signInPage(page);
@@ -19,5 +21,6 @@ export class vinylPages{
         this.DashboardPage = new dashboardPage(page);
         this.TreasuryOrderPage =  new treasuryOrderPage(page);
         this.PortfolioPage = new portfolioPage(page);
+        this.ReturnToTreasuryPage = new returnToTreasuryPage(page);
     }
 }
