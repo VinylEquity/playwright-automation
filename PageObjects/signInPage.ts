@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { mailerMethods } from '../support/mailer.methods';
 
 export class signInPage {
     readonly page: Page;
@@ -29,9 +30,16 @@ export class signInPage {
         await expect(this.signup_button).toBeDisabled();
     }
 
-    async login(email){
+    async sign_in(email){
         await this.enter_email(email);
         await this.click_signin();
+    }
+
+    async login(email){
+        this.sign_in(email);
+        var message = await this.page.getByText('We have sent an email with').textContent();
+        await this.page.goto(await mailerMethods.login_mail(message.substring(40,71), email));
+        await this.page.waitForURL(`${process.env.HOST}verify/phone-number`);
     }
 
     async validate_error(error_msg){

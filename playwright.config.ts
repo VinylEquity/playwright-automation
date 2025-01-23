@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv'
 
 dotenv.config({
-  path: `./env/.env.earth`
+  path: `./env/.env.sandbox`
 });
 
 /**
@@ -33,7 +33,7 @@ export default defineConfig({
     actionTimeout: 60_000,
     
   },
-  timeout: 1 * 60 * 1000,
+  timeout: 10 * 60 * 1000,
   /* Configure projects for major browsers */
   projects: [
     {
