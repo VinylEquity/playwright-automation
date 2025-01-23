@@ -43,7 +43,7 @@ test.describe("Vinyl Treasury Order", async () => {
     await VinylPages.TreasuryOrderPage.validate_TO_document(name);
     await VinylPages.TreasuryOrderPage.validate_TO_details(name, description, 'IPO', process.env.ISSUER, process.env.ISSUE, 1, 'Email');
     url = await page.url();
-    to_id = url.replace(process.env.HOST + 'issuers/treasury-orders/', '').replace('#', '');
+    to_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '').replace('#', '');
     const response = await request.post(`${process.env.LEDGER_SERVICE_API_BASE_URL}/treasury-orders/${to_id}/release`,{
       headers:{
         'X-API-KEY': `${process.env.API_TOKEN}`,
@@ -84,7 +84,7 @@ test.describe("Vinyl Treasury Order", async () => {
     await VinylPages.TreasuryOrderPage.validate_TO_document(name);
     await VinylPages.TreasuryOrderPage.validate_TO_details(name, description, 'IPO', process.env.ISSUER, process.env.ISSUE, 1, 'Email');
     url = await page.url();
-    to_id = url.replace(process.env.HOST + 'issuers/treasury-orders/', '').replace('#', '');
+    to_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '').replace('#', '');
     if(automatic_release){
       automatic_release_time = await VinylPages.TreasuryOrderPage.get_release_date_and_time();
       wait_time = timeHelper.get_wait_time(automatic_release_time);
