@@ -30,10 +30,10 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   });
   
   test('Successful Transfer Agent login', async ({page}) =>{
-    await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
+    await VinylPages.SignInPage.login(`${process.env.TA_USER1}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
-    await VinylPages.DashboardPage.validate_username("AUTOMATION QA");
+    await VinylPages.DashboardPage.validate_username("Automation TA");
     await VinylPages.DashboardPage.logout();
   });
   
