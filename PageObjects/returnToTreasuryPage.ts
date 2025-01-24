@@ -165,6 +165,14 @@ export class returnToTreasuryPage {
         await this.page.waitForURL(`${url}/document-uploader`);
         await this.upload_holder_auth_doc.setInputFiles('test_data/presigned_document.pdf');
         await this.upload_other_doc.setInputFiles('test_data/presigned_document.pdf');
+        await this.page.waitForTimeout(1000); // wait for upload the document
+        if(await this.save_document.isDisabled()){
+            this.page.reload();
+            await this.page.waitForURL(`${url}/document-uploader`);
+            await this.upload_holder_auth_doc.waitFor();
+            await this.upload_holder_auth_doc.setInputFiles('test_data/presigned_document.pdf');
+            await this.upload_other_doc.setInputFiles('test_data/presigned_document.pdf');
+        }
         await this.save_document.click();
         await this.page.waitForTimeout(5000); // waiting time to upload the document
     }
@@ -180,6 +188,7 @@ export class returnToTreasuryPage {
     async validate_RTT_completion(url){
         await this.page.reload();
         await this.page.waitForURL(url);
+        await this.to_status_header.waitFor();
         await expect(this.to_status_header).toContainText('Return to Treasury Order Status');
         await expect(this.rtt_completed).toBeVisible();
     }
