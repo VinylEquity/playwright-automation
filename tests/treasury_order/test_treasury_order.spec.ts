@@ -98,7 +98,7 @@ test.describe("Vinyl Treasury Order", async () => {
       });
       expect(response.ok()).toBeTruthy();
     }
-    subject = `${process.env.ISSUER}  has issued ${process.env.ISSUE} to AUTOMATION`;
+    subject = `${process.env.ISSUER} has issued ${process.env.ISSUE} to AUTOMATION`;
     await page.reload();
     await page.waitForURL(url);
     await mailerMethods.get_TO_mail(subject, `${process.env.RO_USER}`);

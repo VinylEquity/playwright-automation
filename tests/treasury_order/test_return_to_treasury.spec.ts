@@ -4,7 +4,7 @@ import { randomInt } from 'crypto';
 import { timeHelper } from '../../support/time.helper';
 import { mailerMethods } from '../../support/mailer.methods';
 
-test.describe("Vinyl Treasury Order", async () => {
+test.describe("Vinyl Return to Treasury", async () => {
   let VinylPages: vinylPages;
   let quantity: number;
 
@@ -18,15 +18,14 @@ test.describe("Vinyl Treasury Order", async () => {
     quantity = await VinylPages.PortfolioPage.get_issuer_quantity(process.env.ISSUE, process.env.ISSUER);
     await VinylPages.PortfolioPage.logout();
   });
-  
+
   test.afterEach(async ({page}) => {
     await page.close();
   });
 
-  test('Create New Treasury Order and release of Treasury Order via API',{tag: '@dev_sanity'}, async ({ page, request }) => {
+  test('Return to Treasury release RTT via API', {tag: '@dev_sanity'}, async ({ page, request }) => {
     const name = 'Test ' + randomInt(0,999);
-    const description = 'Description Test ' + randomInt(0,999);
-    var automatic_release, url, subject, to_id;
+    var url, rtt_id;
     await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await VinylPages.DashboardPage.go_to_treasury_order_page();
@@ -34,40 +33,36 @@ test.describe("Vinyl Treasury Order", async () => {
     await VinylPages.TreasuryOrderPage.select_issuer(process.env.ISSUER);
     await VinylPages.TreasuryOrderPage.create_treasury_order.click();
     await page.waitForURL(`${process.env.HOST}issuers/treasury-orders/create?type=ISSUANCE`);
-    automatic_release = await VinylPages.TreasuryOrderPage.enter_TO_details(name, process.env.ISSUE, 'IPO', description, 'Email');
-    await VinylPages.TreasuryOrderPage.add_existing_automation_ro_recipient(process.env.RO_USER);
-    await VinylPages.TreasuryOrderPage.validate_recipent_added('automation', process.env.RO_USER, process.env.RO_TIN);
-    await VinylPages.TreasuryOrderPage.enter_quantity_and_price(1, 1);
-    await VinylPages.TreasuryOrderPage.submit_TO();
-    await VinylPages.TreasuryOrderPage.is_TO_submitted();
-    await VinylPages.TreasuryOrderPage.validate_TO_document(name);
-    await VinylPages.TreasuryOrderPage.validate_TO_details(name, description, 'IPO', process.env.ISSUER, process.env.ISSUE, 1, 'Email');
+    await VinylPages.ReturnToTreasuryPage.create_return_to_treasury_order(name, process.env.ISSUE, 'Correction to Registration');
+    await VinylPages.ReturnToTreasuryPage.add_seacurites(`${process.env.RO_USER}`);
+    await VinylPages.ReturnToTreasuryPage.verify_securities_table('AUTOMATION',`${process.env.RO_USER}` , `${process.env.RO_ACCOUNT_NUM}`, '1');
+    await VinylPages.ReturnToTreasuryPage.enter_quntity_to_cancel('1');
+    await VinylPages.ReturnToTreasuryPage.submit_the_order();
+    await VinylPages.ReturnToTreasuryPage.validate_RTT_submission();
     url = await page.url();
-    to_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '').replace('#', '');
-    const response = await request.post(`${process.env.LEDGER_SERVICE_API_BASE_URL}/treasury-orders/${to_id}/release`,{
+    rtt_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '');
+    await VinylPages.ReturnToTreasuryPage.upload_ro_documents(url);
+    await VinylPages.ReturnToTreasuryPage.validate_ro_documents_uploaded(url);
+    const response = await request.post(`${process.env.LEDGER_SERVICE_API_BASE_URL}/treasury-orders/cancelation/${rtt_id}/complete`,{
       headers:{
         'X-API-KEY': `${process.env.API_TOKEN}`,
       }
     });
     expect(response.ok()).toBeTruthy();
-    subject = process.env.ISSUER + " has issued " + process.env.ISSUE + " to AUTOMATION";
-    await page.reload();
-    await page.waitForURL(url);
-    await mailerMethods.get_TO_mail(subject, `${process.env.RO_USER}`);
-    await VinylPages.TreasuryOrderPage.is_TO_release_completed();
+    await VinylPages.ReturnToTreasuryPage.validate_RTT_completion(url);
     await VinylPages.DashboardPage.logout();
+    await mailerMethods.get_TO_mail(`${process.env.ISSUER} has canceled COMMON held by AUTOMATION`, `${process.env.RO_USER}`);
 
     await VinylPages.SignInPage.login(`${process.env.RO_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}portfolio`);
-    await expect(await VinylPages.PortfolioPage.get_issuer_quantity(process.env.ISSUE, process.env.ISSUER)).toBe(quantity + 1);
+    await expect(await VinylPages.PortfolioPage.get_issuer_quantity(process.env.ISSUE, process.env.ISSUER)).toBe(quantity - 1);
     await VinylPages.PortfolioPage.logout();
   });
 
-  test('Create New Treasury Order and automatic release of Treasury Order',{tag: '@regression'}, async ({ page, request }) => {
+  test('Return to Treasury automatic release of RTT', {tag: '@regression'}, async ({ page, request }) => {
     const name = 'Test ' + randomInt(0,999);
-    const description = 'Description Test ' + randomInt(0,999);
-    var automatic_release, url, automatic_release_time, subject, wait_time, to_id;
+    var url, rtt_id;
     await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await VinylPages.DashboardPage.go_to_treasury_order_page();
@@ -75,40 +70,25 @@ test.describe("Vinyl Treasury Order", async () => {
     await VinylPages.TreasuryOrderPage.select_issuer(process.env.ISSUER);
     await VinylPages.TreasuryOrderPage.create_treasury_order.click();
     await page.waitForURL(`${process.env.HOST}issuers/treasury-orders/create?type=ISSUANCE`);
-    automatic_release = await VinylPages.TreasuryOrderPage.enter_TO_details(name, process.env.ISSUE, 'IPO', description, 'Email');
-    await VinylPages.TreasuryOrderPage.add_existing_automation_ro_recipient(process.env.RO_USER);
-    await VinylPages.TreasuryOrderPage.validate_recipent_added('automation', process.env.RO_USER, process.env.RO_TIN);
-    await VinylPages.TreasuryOrderPage.enter_quantity_and_price(1, 1);
-    await VinylPages.TreasuryOrderPage.submit_TO();
-    await VinylPages.TreasuryOrderPage.is_TO_submitted();
-    await VinylPages.TreasuryOrderPage.validate_TO_document(name);
-    await VinylPages.TreasuryOrderPage.validate_TO_details(name, description, 'IPO', process.env.ISSUER, process.env.ISSUE, 1, 'Email');
+    await VinylPages.ReturnToTreasuryPage.create_return_to_treasury_order(name, process.env.ISSUE, 'Correction to Registration');
+    await VinylPages.ReturnToTreasuryPage.add_seacurites(`${process.env.RO_USER}`);
+    await VinylPages.ReturnToTreasuryPage.verify_securities_table('AUTOMATION',`${process.env.RO_USER}` , `${process.env.RO_ACCOUNT_NUM}`, '1');
+    await VinylPages.ReturnToTreasuryPage.enter_quntity_to_cancel('1');
+    await VinylPages.ReturnToTreasuryPage.submit_the_order();
+    await VinylPages.ReturnToTreasuryPage.validate_RTT_submission();
     url = await page.url();
-    to_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '').replace('#', '');
-    if(automatic_release){
-      automatic_release_time = await VinylPages.TreasuryOrderPage.get_release_date_and_time();
-      wait_time = timeHelper.get_wait_time(automatic_release_time);
-      await page.waitForTimeout(wait_time); // wait for the automatic release of TO
-    }
-    else{//call release TO API on when the effective date is not current date
-      const response = await request.post(`${process.env.LEDGER_SERVICE_API_BASE_URL}/treasury-orders/${to_id}/release`,{
-        headers:{
-          'X-API-KEY': `${process.env.API_TOKEN}`,
-        }
-      });
-      expect(response.ok()).toBeTruthy();
-    }
-    subject = `${process.env.ISSUER}  has issued ${process.env.ISSUE} to AUTOMATION`;
-    await page.reload();
-    await page.waitForURL(url);
-    await mailerMethods.get_TO_mail(subject, `${process.env.RO_USER}`);
-    await VinylPages.TreasuryOrderPage.is_TO_release_completed();
+    rtt_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '');
+    await VinylPages.ReturnToTreasuryPage.upload_ro_documents(url);
+    await VinylPages.ReturnToTreasuryPage.validate_ro_documents_uploaded(url);
+    await page.waitForTimeout(300000) // wait for 5 mins for auto release of RTT
+    await VinylPages.ReturnToTreasuryPage.validate_RTT_completion(url);
     await VinylPages.DashboardPage.logout();
+    await mailerMethods.get_TO_mail(`${process.env.ISSUER} has canceled COMMON held by AUTOMATION`, `${process.env.RO_USER}`);
 
     await VinylPages.SignInPage.login(`${process.env.RO_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}portfolio`);
-    await expect(await VinylPages.PortfolioPage.get_issuer_quantity(process.env.ISSUE, process.env.ISSUER)).toBe(quantity + 1);
+    await expect(await VinylPages.PortfolioPage.get_issuer_quantity(process.env.ISSUE, process.env.ISSUER)).toBe(quantity - 1);
     await VinylPages.PortfolioPage.logout();
   });
 });

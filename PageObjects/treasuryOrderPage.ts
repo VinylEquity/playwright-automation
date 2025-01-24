@@ -211,6 +211,7 @@ export class treasuryOrderPage {
     }
 
     async is_TO_release_completed(){
+        await this.to_status_header.waitFor();
         await expect(this.to_status_header).toBeVisible();
         await expect(this.to_status_header).toContainText('Treasury Order Status');
         await expect(this.submission_done).toHaveCSS("color", "rgb(33, 150, 243)");
