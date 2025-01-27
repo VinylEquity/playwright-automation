@@ -38,10 +38,10 @@ test.describe("Vinyl Login Page", {tag: '@smoke'}, async () => {
   });
   
   test('Successful Issuer Admin login', async ({page}) =>{
-    await VinylPages.SignInPage.login(`${process.env.IA_USER}`);
+    await VinylPages.SignInPage.login(`${process.env.IA_USER1}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
-    await VinylPages.DashboardPage.validate_username("AUTOMATION QA");
+    await VinylPages.DashboardPage.validate_username("AutomationIA WayneEnterprises");
     await VinylPages.DashboardPage.logout();
   });
   
