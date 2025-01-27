@@ -18,10 +18,10 @@ test.describe("Vinyl Transfer DWAC Deposit", async () => {
   });
   
   test.afterEach(async ({page}) => {
-    // await page.close();
+    await page.close();
   });
 
-  test('Transfer DWAC Deposit - TA',{tag: ['@dev_sanity', '@regression']}, async ({ page, request }) => {
+  test('Transfer DWAC Deposit - TA',{tag: ['@dev_sanity', '@regression']}, async ({ page }) => {
     await VinylPages.SignInPage.login(`${process.env.TA_USER1}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
@@ -30,7 +30,6 @@ test.describe("Vinyl Transfer DWAC Deposit", async () => {
     await VinylPages.TransfersPage.create_new_transfer(`${process.env.ISSUER1}`, `${process.env.ISSUE1}`, 'DWAC Deposit', 1);
     await VinylPages.TransfersPage.is_transfer_created();
     var url = await page.url()
-    console.log(url);
     await VinylPages.TransfersPage.add_transferer(url, `${process.env.RO2_USERNAME}`, `${process.env.RO2_ACCOUNT_NUM}`, 1);
     await VinylPages.TransfersPage.validate_added_transferor(`${process.env.RO2_USERNAME}`, `${process.env.RO2_ACCOUNT_NUM}`, 1);
     await VinylPages.TransfersPage.submit_transferors.click();
