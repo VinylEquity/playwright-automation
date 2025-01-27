@@ -23,7 +23,7 @@ export const mailHelper = {
     async readEmail(page, senderEmail: string, receiverEmail: string, subject: string): Promise<string> {
         let emails = await mailHelper.emailChecker(senderEmail, receiverEmail, subject);
         let startTime = Date.now();
-        while (emails.length === 0 && Date.now() - startTime < 20000) {
+        while (emails.length === 0 && Date.now() - startTime < 30000) {
             emails = await mailHelper.emailChecker(
                 senderEmail,
                 receiverEmail,
