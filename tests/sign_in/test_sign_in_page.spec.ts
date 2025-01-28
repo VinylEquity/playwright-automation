@@ -33,7 +33,7 @@ test.describe("Vinyl Login Page", {tag: ['@smoke', '@regression', '@dev_sanity']
     await VinylPages.SignInPage.login(`${process.env.TA_USER1}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
-    await VinylPages.DashboardPage.validate_username("Automation TA");
+    await VinylPages.DashboardPage.validate_username(`${process.env.TA_USER1_NAME}`);
     await VinylPages.DashboardPage.logout();
   });
   
@@ -41,7 +41,7 @@ test.describe("Vinyl Login Page", {tag: ['@smoke', '@regression', '@dev_sanity']
     await VinylPages.SignInPage.login(`${process.env.IA_USER1}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}dashboard`);
-    await VinylPages.DashboardPage.validate_username("AutomationIA WayneEnterprises");
+    await VinylPages.DashboardPage.validate_username(`${process.env.IA_USER1_NAME}`);
     await VinylPages.DashboardPage.logout();
   });
   
@@ -49,7 +49,7 @@ test.describe("Vinyl Login Page", {tag: ['@smoke', '@regression', '@dev_sanity']
     await VinylPages.SignInPage.login(`${process.env.RO_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await page.waitForURL(`${process.env.HOST}portfolio`);
-    await VinylPages.PortfolioPage.validate_username("AUTOMATION");
+    await VinylPages.PortfolioPage.validate_username(`${process.env.RO_USER_NAME}`);
     await VinylPages.PortfolioPage.logout();
   });
   
