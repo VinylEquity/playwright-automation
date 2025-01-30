@@ -7,6 +7,7 @@ import { portfolioPage} from './portfolioPage';
 import { returnToTreasuryPage } from './returnToTreasuryPage';
 import { transfersPage } from './transfersPage';
 
+
 export class vinylPages{
     readonly page: Page;
     readonly SignInPage;
@@ -16,6 +17,7 @@ export class vinylPages{
     readonly PortfolioPage;
     readonly ReturnToTreasuryPage;
     readonly TransfersPage;
+
 
     constructor(page: Page){
         this.SignInPage = new signInPage(page);
