@@ -28,6 +28,7 @@ export class holderManagementPage{
     readonly manage_holder_stops_table: Locator;
     readonly manage_position_stops_table: Locator;
     readonly holders_table: Locator;
+    readonly cancel_drs_statement: Locator;
 
     constructor(page: Page){
         this.page = page;
@@ -56,6 +57,7 @@ export class holderManagementPage{
         this.manage_holder_stops_table = page.getByLabel('Manage Holder Stop').locator('table.MuiTable-root tbody');
         this.manage_position_stops_table = page.getByLabel('Manage Positions Stop').locator('table.MuiTable-root tbody');
         this.holders_table = page.locator('table.MuiTable-root tbody').nth(0);
+        this.cancel_drs_statement = page.getByRole('button', { name: 'Cancel' });
     }
 
     async search_for_holder(holder){
@@ -64,19 +66,21 @@ export class holderManagementPage{
         await this.page.getByRole('option', { name: holder }).click();
     }
    
-    async validate_holder_details_TA(name, email, tin, type){
+    async validate_holder_details_TA(name, email, tin, type, address){
         await expect(this.holder_details).toBeVisible();
         await expect(this.page.getByText(`Legal Name: ${name}`)).toBeVisible();
         await expect(this.page.getByText(`Email Address: ${email}`)).toBeVisible();
         await expect(this.page.getByText(`Holder Type: ${type}`)).toBeVisible();
         await expect(this.page.getByText(`TIN: ${tin}`)).toBeVisible();
+        await expect(this.page.getByText(`Mailing Address: ${address}`)).toBeVisible();
     }
 
-    async validate_holder_details_IA(name, email, type){
+    async validate_holder_details_IA(name, email, type, address){
         await expect(this.holder_details).toBeVisible();
         await expect(this.page.getByText(`Legal Name: ${name}`)).toBeVisible();
         await expect(this.page.getByText(`Email Address: ${email}`)).toBeVisible();
         await expect(this.page.getByText(`Holder Type: ${type}`)).toBeVisible();
+        await expect(this.page.getByText(`Mailing Address: ${address}`)).toBeVisible();
     }
 
     async add_holder_stop(){
@@ -138,7 +142,6 @@ export class holderManagementPage{
     async remove_stop(){
         this.page.getByRole('row', { name: 'Expand Other' }).getByRole('button').nth(1).click();
     }
-
 
     async validate_holder_stop_removed(){
         await this.alert.waitFor();

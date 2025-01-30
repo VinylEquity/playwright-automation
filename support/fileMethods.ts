@@ -45,20 +45,20 @@ export class fileMethods{
         return response_text;
     }
 
-    async generate_expected_text(){//(issuer, issue, username, address, from_date, to_date, account_num, restricted_quantity, unrestricted_quantity){
+    async generate_expected_drs_statement_text(){
         var header = `\n\nStatement\nVinyl Equity, Inc.\nPO Box 247, Winnetka, IL, 60093, USA\nhttps://www.vinylequity.com\nLPA Number: 7925\n${process.env.ISSUER1} ${process.env.ISSUE1}\n`;
-        var ro_details1 = `${process.env.RO2_USERNAME}\n${process.env.RO2_ADDRESS}\n`
-        var ticker = "Ticker: \nCUSIP: 779810131101\n";
-        var date_range = "2025-01-24 to 2025-01-24\n";
-        var ro_details2 = `Registered Owner: ${process.env.RO2_USERNAME}\nDRS Account Number: ${process.env.RO2_ACCOUNT_NUM}\n`;
+        var ro_details1 = `${process.env.DRS_RO_USER_NAME}\n${process.env.DRS_RO_ADDRESS}\n`
+        var ticker = `Ticker: \nCUSIP: ${process.env.CUSIP}\n`;
+        var date_range = `${process.env.DRS_FROM_DATE} to ${process.env.DRS_TO_DATE}\n`;
+        var ro_details2 = `Registered Owner: ${process.env.DRS_RO_USER_NAME}\nDRS Account Number: ${process.env.DRS_RO_ACCOUNT_NUM}\n`;
         var holding_summary_header = "Holdings Summary\nUnrestricted QuantityRestricted QuantityTotal Quantity\n";
-        var holding_summary_body = "9,98609,986\n"
+        var holding_summary_body = `${process.env.DRS_UNRESTRICTED}${process.env.DRS_RESTRICTED}${parseInt(process.env.DRS_RESTRICTED)+ parseInt(process.env.DRS_UNRESTRICTED)}\n`;
         var holding_details_header = "Holdings Detail\nIssue DateQuantityAcquisition DateCost BasisGift/InheritedGift FMVLegend Code(s)Expiry Date\n"
-        var holding_details_body = "2025-01-029,9862025-01-23\n$109,846.00\n";
+        var holding_details_body = `${process.env.DRS_HOLDINGS1.replaceAll('|', '\n')}\n${process.env.DRS_HOLDINGS2.replaceAll('|', '\n')}\n`;
         var transaction_header = "Transactions\nDateDescriptionQuantity IssuedQuantity CanceledRestrictionsExpiry Date\n";
-        var transaction_body = "2025-01-24Transfer - Move to Broker \n(DWAC Deposit)\n01\n2025-01-24Transfer - Move to Broker \n(DWAC Deposit)\n01\n2025-01-24Transfer - Move to Broker \n(DWAC Deposit)\n01\n2025-01-24Transfer - Move to Broker \n(DWAC Deposit)\n01\n2025-01-24Transfer - Move to Broker \n(DWAC Deposit)\n01\n2025-01-24Transfer - Move to Broker \n(DWAC Deposit)\n01\n2025-01-24Transfer - Move to Broker \n(DWAC Deposit)\n01\n"
+        var transaction_body = `${process.env.DRS_TRANS1.replaceAll('|', '\n')}\n${process.env.DRS_TRANS2.replaceAll('|', '\n')}\n${process.env.DRS_TRANS3.replaceAll('|', '\n')}\n`;
         var legend_header = "Legend Details\nLegend CodeLegend Text\n"
-        var legend_body = "\n"
+        var legend_body = '1933 ActThe securities represented hereby have not been registered under the Securities Act of 1933, as amended \n(the "Act"), or under any state securities laws and may not be offered for sale, sold or transferred in the \nabsence of an effective registration statement under the Act and applicable State securities laws or an \nexemption from registration thereunder.\n';
         var legend_footer = "Legends are restrictions on the transfer of securities. If the Legend has an expiry date, it will automatically fall off on that date. If the legend is related \nto the 1933 Act or Rule 144, there is a hold period and other requirements for removal. Please log into your account for more information.\n";
         var footer = "As the registered owner or a legal representative thereof, you may access your account securely 24 x 7 at the website provided above. Vinyl Equity, \nInc. is an SEC registered Transfer Agent & Registrar. If you wish to learn more about our Privacy and Data Protection Policies, please visit our website \nat the link above.";
         var ro_details =  ro_details1 + ticker + date_range + ro_details2;
