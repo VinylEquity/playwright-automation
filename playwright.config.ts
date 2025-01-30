@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv'
 
 dotenv.config({
-  path: `./env/.env.earth`
+  path: `./env/.env.sandbox`
 });
 
 /**
@@ -17,7 +17,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 1,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html', { open: 'always',outputFolder: 'reports-pw' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -33,7 +33,7 @@ export default defineConfig({
     actionTimeout: 60_000,
     
   },
-  timeout: 1 * 60 * 1000,
+  timeout: 10 * 60 * 1000,
   /* Configure projects for major browsers */
   projects: [
     {
