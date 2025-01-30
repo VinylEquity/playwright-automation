@@ -128,7 +128,7 @@ export class returnToTreasuryPage {
         await this.page.waitForSelector('table.MuiTable-root tbody');
         await this.holding_table.waitFor();
         await expect(this.holding_table).toBeVisible();
-        await this.page.locator('.MuiTableCell-root > .MuiButtonBase-root > .PrivateSwitchBase-input').nth(1).check();
+        await this.page.locator('.MuiTableCell-root > .MuiButtonBase-root > .PrivateSwitchBase-input').nth(0).check();
         await this.add_securities.click();
         await this.add_securities_done.click();
         await this.securities_table.waitFor();
