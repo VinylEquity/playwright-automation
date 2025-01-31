@@ -32,6 +32,6 @@ test.describe("Vinyl Holder Management, Add and remove holder and position stop 
     await VinylPages.HolderManagementPage.validate_position_stop_added();
     await VinylPages.HolderManagementPage.remove_stop();
     await VinylPages.HolderManagementPage.validate_position_stop_removed();
-    // await VinylPages.DashboardPage.logout();
+    await VinylPages.DashboardPage.logout();
   });
 });
