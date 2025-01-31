@@ -23,6 +23,7 @@ export class dashboardPage{
         this.transfers = page.getByRole('link', { name: 'theme-icon Transfers' });
         this.holder_management = page.getByRole('link', { name: 'theme-icon Holder Management' });
         this.ia_holder = page.getByRole('link', { name: 'theme-icon Holders' });
+
     }
     async validate_username(name){
         await this.close_alert.click();
