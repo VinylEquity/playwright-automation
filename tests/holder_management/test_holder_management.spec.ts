@@ -86,4 +86,23 @@ test.describe("Vinyl Holder Management Tests", {tag: ['@dev_sanity', '@regressio
     await VinylPages.HolderManagementPage.cancel_drs_statement.click();
     await VinylPages.DashboardPage.logout();
   });
+
+  test('Generate DRS statement via IA', async ({page}) => {
+    await VinylPages.SignInPage.login(`${process.env.IA_USER1}`);
+    await VinylPages.PhoneVerificationPage.enter_valid_otp();
+    await page.waitForURL(`${process.env.HOST}dashboard`);
+    await VinylPages.DashboardPage.ia_holder.click();
+    await expect(VinylPages.HolderManagementPage.holder_details).not.toBeVisible();
+    await VinylPages.HolderManagementPage.search_for_holder(process.env.DRS_RO_USER); 
+    await VinylPages.HolderManagementPage.validate_holder_details_IA(process.env.DRS_RO_USER_NAME, process.env.DRS_RO_USER, 'Individual', process.env.DRS_RO_ADDRESS);
+    var url = await VinylPages.HolderManagementPage.generate_drs_statement_for_RO(process.env.DRS_RO_USER_NAME, `${process.env.ISSUER1} ${process.env.ISSUE1}`, process.env.DRS_FROM_DATE, process.env.DRS_TO_DATE);
+    await FileMethods.download_pdf_file(url);
+    var response_text = await FileMethods.parse_pdf();
+    var expected_text  = await FileMethods.generate_expected_drs_statement_text();
+    await expect(response_text).toEqual(expected_text);
+    await FileMethods.delete_downloaded_file();
+    await page.keyboard.press('Escape');
+    await VinylPages.HolderManagementPage.cancel_drs_statement.click();
+    await VinylPages.DashboardPage.logout();
+  });
 });
