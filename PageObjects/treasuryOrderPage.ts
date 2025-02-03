@@ -95,7 +95,7 @@ export class treasuryOrderPage {
         this.effective_date_selected = timeHelper.get_effective_date();
         // select the very next available date if current day is weekend or holiday
         while(true){
-            if(await this.page.getByRole('gridcell', { name: this.effective_date_selected }).isDisabled()){
+            if(await this.page.getByRole('gridcell', { name: this.effective_date_selected, exact: true }).isDisabled()){
                 this.effective_date_selected = String(parseInt(this.effective_date_selected) + 1).padStart(2, '0');
                 this.is_current_date_is_effective_date = false;
             }
@@ -103,8 +103,8 @@ export class treasuryOrderPage {
                 break;
             }
         }
-        await expect(this.page.getByRole('gridcell', { name: this.effective_date_selected })).toBeEnabled();
-        await this.page.getByRole('gridcell', { name: this.effective_date_selected }).click();
+        await expect(this.page.getByRole('gridcell', { name: this.effective_date_selected, exact: true })).toBeEnabled();
+        await this.page.getByRole('gridcell', { name: this.effective_date_selected, exact: true }).click();
     }
 
     // selects the current date and nearby time as release date and time 

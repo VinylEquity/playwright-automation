@@ -33,7 +33,7 @@ export class portfolioPage{
             issuer_UI = await this.holding_table.locator('tr').nth(row).locator('td').nth(0).innerText();
             issue_UI = await this.holding_table.locator('tr').nth(row).locator('td').nth(1).innerText();
             if(issuer  ==  issuer_UI  && issue ==  issue_UI){
-                return parseInt(await this.holding_table.locator('tr').nth(row).locator('td').nth(2).innerText());
+                return parseInt((await this.holding_table.locator('tr').nth(row).locator('td').nth(2).innerText()).replace(',',''));
             }
         }
     }

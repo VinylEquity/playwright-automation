@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { vinylPages } from '../../PageObjects/vinylPages'
 import { randomInt } from 'crypto';
-import { timeHelper } from '../../support/time.helper';
 import { mailerMethods } from '../../support/mailer.methods';
+import { apiMethods } from '../../support/apiMethods';
 
 test.describe("Vinyl Return to Treasury", async () => {
   let VinylPages: vinylPages;
+  let APIMethods: apiMethods;
   let current_quantity: number;
   let cancel_quantity: number;
 
@@ -25,9 +26,11 @@ test.describe("Vinyl Return to Treasury", async () => {
   });
 
   test('Return to Treasury release RTT via API', {tag: '@dev_sanity'}, async ({ page, request }) => {
+    APIMethods = new apiMethods(request);
     const name = 'Test ' + randomInt(0,999);
     var url, rtt_id;
     cancel_quantity = 1;
+
     await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await VinylPages.DashboardPage.go_to_treasury_order_page();
@@ -45,12 +48,7 @@ test.describe("Vinyl Return to Treasury", async () => {
     rtt_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '');
     await VinylPages.ReturnToTreasuryPage.upload_ro_documents(url);
     await VinylPages.ReturnToTreasuryPage.validate_ro_documents_uploaded(url);
-    const response = await request.post(`${process.env.LEDGER_SERVICE_API_BASE_URL}/treasury-orders/cancelation/${rtt_id}/complete`,{
-      headers:{
-        'X-API-KEY': `${process.env.API_TOKEN}`,
-      }
-    });
-    expect(response.ok()).toBeTruthy();
+    await APIMethods.api_release_RTT(rtt_id);
     await VinylPages.ReturnToTreasuryPage.validate_RTT_completion(url);
     await VinylPages.DashboardPage.logout();
     await mailerMethods.get_TO_mail(`${process.env.ISSUER} has canceled COMMON held by AUTOMATION`, `${process.env.RO_USER}`);
@@ -64,8 +62,9 @@ test.describe("Vinyl Return to Treasury", async () => {
 
   test('Return to Treasury automatic release of RTT', {tag: '@regression'}, async ({ page, request }) => {
     const name = 'Test ' + randomInt(0,999);
-    var url, rtt_id;
+    var url;
     cancel_quantity = 1;
+    
     await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
     await VinylPages.PhoneVerificationPage.enter_valid_otp();
     await VinylPages.DashboardPage.go_to_treasury_order_page();
@@ -77,10 +76,10 @@ test.describe("Vinyl Return to Treasury", async () => {
     await VinylPages.ReturnToTreasuryPage.add_seacurites(`${process.env.RO_USER}`);
     await VinylPages.ReturnToTreasuryPage.verify_securities_table('AUTOMATION',`${process.env.RO_USER}` , `${process.env.RO_ACCOUNT_NUM}`, String(cancel_quantity));
     await VinylPages.ReturnToTreasuryPage.enter_quntity_to_cancel(String(cancel_quantity));
+
     await VinylPages.ReturnToTreasuryPage.submit_the_order();
     await VinylPages.ReturnToTreasuryPage.validate_RTT_submission();
     url = await page.url();
-    rtt_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '');
     await VinylPages.ReturnToTreasuryPage.upload_ro_documents(url);
     await VinylPages.ReturnToTreasuryPage.validate_ro_documents_uploaded(url);
     await page.waitForTimeout(300000) // wait for 5 mins for auto release of RTT

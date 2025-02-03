@@ -3,9 +3,12 @@ import { vinylPages } from '../../PageObjects/vinylPages'
 import { randomInt } from 'crypto';
 import { timeHelper } from '../../support/time.helper';
 import { mailerMethods } from '../../support/mailer.methods';
+import { apiMethods } from '../../support/apiMethods';
+
 
 test.describe("Vinyl Treasury Order", async () => {
   let VinylPages: vinylPages;
+  let APIMethods: apiMethods;
   let current_quantity: number;
   let new_quantity: number;
 
@@ -25,6 +28,7 @@ test.describe("Vinyl Treasury Order", async () => {
   });
 
   test('Create New Treasury Order and release of Treasury Order via API',{tag: '@dev_sanity'}, async ({ page, request }) => {
+    APIMethods = new apiMethods(request);
     const name = 'Test ' + randomInt(0,999);
     const description = 'Description Test ' + randomInt(0,999);
     var automatic_release, url, subject, to_id;
@@ -46,12 +50,7 @@ test.describe("Vinyl Treasury Order", async () => {
     await VinylPages.TreasuryOrderPage.validate_TO_details(name, description, 'IPO', process.env.ISSUER, process.env.ISSUE, new_quantity, 'Email');
     url = await page.url();
     to_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '').replace('#', '');
-    const response = await request.post(`${process.env.LEDGER_SERVICE_API_BASE_URL}/treasury-orders/${to_id}/release`,{
-      headers:{
-        'X-API-KEY': `${process.env.API_TOKEN}`,
-      }
-    });
-    expect(response.ok()).toBeTruthy();
+    await APIMethods.api_release_TO(to_id);
     subject = process.env.ISSUER + " has issued " + process.env.ISSUE + " to AUTOMATION";
     await page.reload();
     await page.waitForURL(url);
@@ -94,12 +93,8 @@ test.describe("Vinyl Treasury Order", async () => {
       await page.waitForTimeout(wait_time); // wait for the automatic release of TO
     }
     else{//call release TO API on when the effective date is not current date
-      const response = await request.post(`${process.env.LEDGER_SERVICE_API_BASE_URL}/treasury-orders/${to_id}/release`,{
-        headers:{
-          'X-API-KEY': `${process.env.API_TOKEN}`,
-        }
-      });
-      expect(response.ok()).toBeTruthy();
+      APIMethods = new apiMethods(request);
+      await APIMethods.api_release_TO(to_id);
     }
     subject = `${process.env.ISSUER} has issued ${process.env.ISSUE} to AUTOMATION`;
     await page.reload();
