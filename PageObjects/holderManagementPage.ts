@@ -24,8 +24,9 @@ export class holderManagementPage{
     readonly manage_holder_stop_btn: Locator;
     readonly manage_position_stop_btn: Locator;
     readonly holder_stop_reason_info: Locator;
-    readonly manager_holder_stop_popup: Locator;
+    readonly manage_holder_stop_popup: Locator;
     readonly manage_holder_stops_table: Locator;
+    readonly manage_position_stop_popup: Locator;
     readonly manage_position_stops_table: Locator;
     readonly holders_table: Locator;
     readonly cancel_drs_statement: Locator;
@@ -53,7 +54,8 @@ export class holderManagementPage{
         this.manage_holder_stop_btn = page.getByRole('button', { name: 'Manage Stops' });
         this.manage_position_stop_btn = page.getByRole('button', { name: 'Manage Stop' }).nth(1)
         this.holder_stop_reason_info = page.locator('div').filter({ hasText: /^Other$/ })
-        this.manager_holder_stop_popup = page.getByLabel('Manage Holder Stop');
+        this.manage_holder_stop_popup = page.getByLabel('Manage Holder Stop');
+        this.manage_position_stop_popup = page.getByLabel('Manage Positions Stop');
         this.manage_holder_stops_table = page.getByLabel('Manage Holder Stop').locator('table.MuiTable-root tbody');
         this.manage_position_stops_table = page.getByLabel('Manage Positions Stop').locator('table.MuiTable-root tbody');
         this.holders_table = page.locator('table.MuiTable-root tbody').nth(0);
@@ -118,6 +120,7 @@ export class holderManagementPage{
         await expect(this.manage_holder_stop_btn).toBeEnabled();
         await expect(this.holder_stop_reason_info).toBeVisible();
         await this.manage_holder_stop_btn.click();
+        await expect(this.manage_holder_stop_popup).toBeVisible();
         await expect(this.manage_holder_stops_table.locator('tr').nth(0).locator('td').nth(2)).toHaveText('Other');
         await expect(this.manage_holder_stops_table.locator('tr').nth(0).locator('td').nth(3)).toHaveText(new Date().toLocaleDateString("fr-CA", {year:"numeric", month: "2-digit", day:"2-digit"}));
         await expect(this.manage_holder_stops_table.locator('tr').nth(0).locator('td').nth(4)).toHaveText('');
@@ -133,6 +136,7 @@ export class holderManagementPage{
         await this.holders_table.locator('tr').nth(1).locator('td').nth(1).click();
         await expect(this.manage_position_stop_btn).toBeEnabled();
         await this.manage_position_stop_btn.click();
+        await expect(this.manage_position_stop_popup).toBeVisible();
         await expect(this.manage_position_stops_table.locator('tr').nth(0).locator('td').nth(2)).toHaveText('Other');
         await expect(this.manage_position_stops_table.locator('tr').nth(0).locator('td').nth(3)).toHaveText(new Date().toLocaleDateString("fr-CA", {year:"numeric", month: "2-digit", day:"2-digit"}));
         await expect(this.manage_position_stops_table.locator('tr').nth(0).locator('td').nth(4)).toHaveText('');
