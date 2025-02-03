@@ -1,5 +1,10 @@
 export const timeHelper = {
     get_effective_date(): string {
+        var date = new Date().getDate();
+        console.log(date);
+        if(date<10){
+            return String(new Date().getDate());
+        }
         return String(new Date().getDate()).padStart(2, '0');
     },
 

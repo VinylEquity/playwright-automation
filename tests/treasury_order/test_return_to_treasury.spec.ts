@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { vinylPages } from '../../PageObjects/vinylPages'
 import { randomInt } from 'crypto';
-import { timeHelper } from '../../support/time.helper';
 import { mailerMethods } from '../../support/mailer.methods';
 import { apiMethods } from '../../support/apiMethods';
 
@@ -63,7 +62,7 @@ test.describe("Vinyl Return to Treasury", async () => {
 
   test('Return to Treasury automatic release of RTT', {tag: '@regression'}, async ({ page, request }) => {
     const name = 'Test ' + randomInt(0,999);
-    var url, rtt_id;
+    var url;
     cancel_quantity = 1;
     
     await VinylPages.SignInPage.login(`${process.env.TA_USER}`);
@@ -81,7 +80,6 @@ test.describe("Vinyl Return to Treasury", async () => {
     await VinylPages.ReturnToTreasuryPage.submit_the_order();
     await VinylPages.ReturnToTreasuryPage.validate_RTT_submission();
     url = await page.url();
-    rtt_id = url.replace(`${process.env.HOST}issuers/treasury-orders/`, '');
     await VinylPages.ReturnToTreasuryPage.upload_ro_documents(url);
     await VinylPages.ReturnToTreasuryPage.validate_ro_documents_uploaded(url);
     await page.waitForTimeout(300000) // wait for 5 mins for auto release of RTT

@@ -1,6 +1,5 @@
 import { page, expect } from '@playwright/test';
 import {mailHelper} from "../support/mail.helper";
-import { console } from 'inspector';
 
 export const mailerMethods = {
     async login_mail(subject: string, toAddress: string){

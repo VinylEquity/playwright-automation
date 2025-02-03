@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { type Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 import { randomInt } from 'crypto';
@@ -13,7 +13,7 @@ export class fileMethods{
         this.file_path = 'test_data/';
     }
 
-    async download_pdf_file(pdfUrl){
+    async download_pdf_file_from_print_view(pdfUrl){
         this.file_name = `test_stmt_${randomInt(0,999)}.pdf`
         const pdfBuffer = await this.page.evaluate(async (blobUrl) => {
             const response = await fetch(blobUrl);

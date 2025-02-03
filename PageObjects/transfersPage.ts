@@ -1,5 +1,4 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import { timeHelper } from '../support/time.helper';
 import { randomInt } from 'crypto';
 
 export class transfersPage{
