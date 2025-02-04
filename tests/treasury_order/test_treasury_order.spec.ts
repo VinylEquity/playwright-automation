@@ -40,7 +40,7 @@ test.describe("Vinyl Treasury Order", async () => {
     await VinylPages.TreasuryOrderPage.select_issuer(process.env.ISSUER);
     await VinylPages.TreasuryOrderPage.create_treasury_order.click();
     await page.waitForURL(`${process.env.HOST}issuers/treasury-orders/create?type=ISSUANCE`);
-    automatic_release = await VinylPages.TreasuryOrderPage.enter_TO_details(name, process.env.ISSUE, 'IPO', description, 'Email');
+    automatic_release = await VinylPages.TreasuryOrderPage.enter_TO_details(name, process.env.ISSUE, 'IPO', description, 'Email', false);
     await VinylPages.TreasuryOrderPage.add_existing_automation_ro_recipient(process.env.RO_USER);
     await VinylPages.TreasuryOrderPage.validate_recipent_added('automation', process.env.RO_USER, process.env.RO_TIN);
     await VinylPages.TreasuryOrderPage.enter_quantity_and_price(new_quantity, 1);
@@ -77,7 +77,7 @@ test.describe("Vinyl Treasury Order", async () => {
     await VinylPages.TreasuryOrderPage.select_issuer(process.env.ISSUER);
     await VinylPages.TreasuryOrderPage.create_treasury_order.click();
     await page.waitForURL(`${process.env.HOST}issuers/treasury-orders/create?type=ISSUANCE`);
-    automatic_release = await VinylPages.TreasuryOrderPage.enter_TO_details(name, process.env.ISSUE, 'IPO', description, 'Email');
+    automatic_release = await VinylPages.TreasuryOrderPage.enter_TO_details(name, process.env.ISSUE, 'IPO', description, 'Email', false);
     await VinylPages.TreasuryOrderPage.add_existing_automation_ro_recipient(process.env.RO_USER);
     await VinylPages.TreasuryOrderPage.validate_recipent_added('automation', process.env.RO_USER, process.env.RO_TIN);
     await VinylPages.TreasuryOrderPage.enter_quantity_and_price(new_quantity, 1);

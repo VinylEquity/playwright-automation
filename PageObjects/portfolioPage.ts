@@ -6,6 +6,8 @@ export class portfolioPage{
     readonly user_name: Locator;
     readonly logout_btn: Locator;
     readonly holding_table: Locator;
+    readonly transactions: Locator;
+    readonly transfers: Locator;
 
     constructor(page: Page){
         this.page = page;
@@ -13,6 +15,8 @@ export class portfolioPage{
         this.user_name = page.getByLabel('user-account');
         this.logout_btn = page.getByRole('button', { name: 'Logout' });
         this.holding_table = page.locator('table.MuiTable-root tbody').first(); 
+        this.transactions = page.getByRole('button', { name: 'Transactions' });
+        this.transfers = page.getByRole('link', { name: 'theme-icon Transfers' });
     }
     async validate_username(name){
         await this.close_alert.click();
@@ -36,5 +40,10 @@ export class portfolioPage{
                 return parseInt((await this.holding_table.locator('tr').nth(row).locator('td').nth(2).innerText()).replace(',',''));
             }
         }
+    }
+
+    async go_to_transfers_page(){
+        await this.transactions.click();
+        await this.transfers.click();
     }
 }

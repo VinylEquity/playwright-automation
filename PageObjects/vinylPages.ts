@@ -7,6 +7,7 @@ import { portfolioPage} from './portfolioPage';
 import { returnToTreasuryPage } from './returnToTreasuryPage';
 import { transfersPage } from './transfersPage';
 import { holderManagementPage } from './holderManagementPage';
+import { transfersPageRO } from './transfersPageRO';
 
 export class vinylPages{
     readonly page: Page;
@@ -18,6 +19,7 @@ export class vinylPages{
     readonly ReturnToTreasuryPage;
     readonly TransfersPage;
     readonly HolderManagementPage;
+    readonly TransfersPageRO;
 
     constructor(page: Page){
         this.SignInPage = new signInPage(page);
@@ -28,5 +30,6 @@ export class vinylPages{
         this.ReturnToTreasuryPage = new returnToTreasuryPage(page);
         this.TransfersPage = new transfersPage(page);
         this.HolderManagementPage =  new holderManagementPage(page);
+        this.TransfersPageRO =  new transfersPageRO(page);
     }
 }

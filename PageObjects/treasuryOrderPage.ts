@@ -1,9 +1,12 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { timeHelper } from '../support/time.helper';
+import { apiMethods } from '../support/apiMethods';
+import { randomInt } from 'crypto';
 
 export class treasuryOrderPage {
     is_current_date_is_effective_date: Boolean;
     effective_date_selected: string;
+    APIMethods: apiMethods
     readonly page: Page;
     readonly select_issuer_profile: Locator;
     readonly create_treasury_order: Locator;
@@ -43,6 +46,13 @@ export class treasuryOrderPage {
     readonly signature_done: Locator;
     readonly pending_release_done: Locator;
     readonly completed_done: Locator;
+    readonly disable_1933_act_popup: Locator;
+    readonly legal_opinion_name: Locator;
+    readonly legal_opinion_desc: Locator;
+    readonly legal_opinion_doc: Locator
+    readonly legal_opinion_create: Locator;
+    readonly select_legal_opinion: Locator;
+    readonly save_legal_opinion: Locator;
 
     constructor(page: Page){
         this.page = page;
@@ -83,6 +93,13 @@ export class treasuryOrderPage {
         this.pending_release_done = page.locator('div').filter({ hasText: /^Pending Release$/ }).locator('path')
         this.completed_done = page.locator('div').filter({ hasText: /^Completed$/ }).locator('path');
         this.is_current_date_is_effective_date = true;
+        this.disable_1933_act_popup = page.getByLabel('Upload Supporting Legal');
+        this.legal_opinion_name = page.locator('input[name="name"]');
+        this.legal_opinion_desc = page.locator('input[name="description"]');
+        this.legal_opinion_doc = page.getByRole('button', { name: 'Upload' }).first();
+        this.legal_opinion_create = page.getByRole('button', { name: 'Create' });
+        this.select_legal_opinion = page.locator('div').filter({ hasText: /^Legal Opinion Name$/ });
+        this.save_legal_opinion = page.getByRole('button', { name: 'Save' });
     }
 
     async select_issuer(issuer){
@@ -112,7 +129,13 @@ export class treasuryOrderPage {
         var date_time = timeHelper.get_automatic_release_date_time();
         await this.release_date.click();
         await this.page.getByRole('gridcell', { name: effective_date }).nth(1).click();
-        await this.page.getByLabel(date_time[1] + ' hours', { exact: true }).click();
+        if(await this.page.getByLabel(date_time[1] + ' hours', { exact: true }).isVisible()){
+            await this.page.getByLabel(date_time[1] + ' hours', { exact: true }).click();
+        }
+        else{
+            await this.release_date.click();
+            await this.page.getByLabel(date_time[1] + ' hours', { exact: true }).click();
+        }
         await this.page.getByLabel(date_time[2] + ' minutes',  { exact: true }).click();
         await this.release_date_time_ok.click();
     }
@@ -130,8 +153,24 @@ export class treasuryOrderPage {
         await expect(this.document_uploaded_msg).toBeVisible();
         await this.close_doc_upload_popup.click();
     }
+    
+    async disable_1933_act_for_TO(){
+        var name = `TestLegalOpinion ${randomInt(0,999)}`
+        await this.page.locator('div').filter({ hasText: /^YES$/ }).nth(1).click();
+        await this.disable_1933_act_popup.waitFor();
+        await this.legal_opinion_name.fill(name);
+        await this.legal_opinion_desc.fill(name);
+        await this.legal_opinion_doc.setInputFiles('test_data/presigned_document.pdf');
+        await this.page.waitForTimeout(5000); 
+        await expect(this.legal_opinion_create).toBeEnabled();
+        await this.legal_opinion_create.click();
+        await expect(this.page.locator('div').filter({ hasText: 'Successfully stored the Supporting Legal Opinion, please select the document from the list' }).nth(2)).toBeVisible();
+        await this.select_legal_opinion.click();
+        await this.page.getByRole('option', { name: name }).click();
+        await this.save_legal_opinion.click();
+    }
 
-    async enter_TO_details(name, issue, reason, description, d_method){
+    async enter_TO_details(name, issue, reason, description, d_method, disable_1993_act){
         await this.order_name.fill(name);
         await this.issue.click();
         await this.page.getByRole('option', { name: issue }).click();
@@ -145,13 +184,16 @@ export class treasuryOrderPage {
         await this.act_1993.click();
         await this.disable_board_approval();
         await this.upload_presigned_document();
+        if(disable_1993_act){
+           await this.disable_1933_act_for_TO();
+        }
         return this.is_current_date_is_effective_date;
     } 
 
     async add_existing_automation_ro_recipient(email){
         await this.add_recipient_btn.click();
         await this.search_ro_user.fill(email);
-        await this.page.getByRole('option', { name: 'automation | automation+' }).click();
+        await this.page.getByRole('option', { name: email }).click();
         await this.save_ro.click();
     }
 
@@ -178,6 +220,7 @@ export class treasuryOrderPage {
     }
 
     async is_TO_submitted(){
+        await this.to_status_header.waitFor();
         await expect(this.to_status_header).toContainText('Treasury Order Status');
         await expect(this.submission_done).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.signature_done).toHaveCSS("color", "rgb(33, 150, 243)");
@@ -218,5 +261,25 @@ export class treasuryOrderPage {
         await expect(this.signature_done).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.pending_release_done).toHaveCSS("color", "rgb(33, 150, 243)");
         await expect(this.completed_done).toHaveCSS("color", "rgb(33, 150, 243)");
+    }
+
+    async create_and_release_TO(name, issue, issuer, reason, description, type, ro_name, ro_user, ro_tin, quantity, request, disable_1993_act){
+        this.APIMethods = new apiMethods(request);
+        await this.select_issuer(issuer);
+        await this.create_treasury_order.click();
+        await this.page.waitForURL(`${process.env.HOST}issuers/treasury-orders/create?type=ISSUANCE`);
+        var automatic_release = await this.enter_TO_details(name, issue, reason, description, type, disable_1993_act);
+        await this.add_existing_automation_ro_recipient(ro_user);
+        await this.validate_recipent_added(ro_name, ro_user, ro_tin);
+        await this.enter_quantity_and_price(quantity, 1);
+        await this.submit_TO();
+        await this.is_TO_submitted();
+        await this.validate_TO_document(name);
+        await this.validate_TO_details(name, description, reason, issuer, issue, quantity, type);
+        var url = await this.page.url();
+        await this.APIMethods.api_release_TO(url.replace(`${process.env.HOST}issuers/treasury-orders/`, '').replace('#', ''));
+        await this.page.reload();
+        await this.page.waitForURL(url);
+        await this.is_TO_release_completed();
     }
 }

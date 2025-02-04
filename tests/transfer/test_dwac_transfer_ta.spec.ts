@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { vinylPages } from '../../PageObjects/vinylPages';
 import { mailerMethods } from '../../support/mailer.methods';
 
-test.describe("Vinyl Transfer DWAC Deposit", async () => {
+test.describe("Vinyl Transfer DWAC Deposit via TA", async () => {
   let VinylPages: vinylPages;
   let quantity: number;
 
